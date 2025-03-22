@@ -2,10 +2,22 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class RotateObject : MonoBehaviour
+public class ObjectFreeInspector : MonoBehaviour
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private Camera cam;
+    private static ObjectFreeInspector instance;
+    public static void BeginInspecting(GameObject target)
+    {
+        target.transform.position = new Vector3(0, 4f, 0); //A point high enough offscreen
+        target.transform.DOMove(Vector3.zero, 2f).SetEase(Ease.OutQuad);
+        instance.target = target.transform;
+    }
+    public static void EndInspection()
+    {
+        instance.target = null;
+    }
+
+    private Transform target;
+    [SerializeField] private CameraManager cam;
 
     float zoomBuffer = 0.5f;
 
@@ -41,13 +53,14 @@ public class RotateObject : MonoBehaviour
 
     private AverageBuffer buffer = new();
 
-    public bool click;
-    public Vector2 pos;
-    public Vector2 lastPos;
-    public Vector2 smoothed;
-    public float scroll;
+    private bool click;
+    private Vector2 pos;
+    private Vector2 lastPos;
+    private Vector2 smoothed;
     void Awake()
     {
+        instance = this;
+
         InputAction moveAction = InputSystem.actions.FindActionMap("Player").FindAction("Move");
         InputAction clickAction = InputSystem.actions.FindActionMap("Player").FindAction("Click");
         InputAction scrollAction = InputSystem.actions.FindActionMap("Player").FindAction("Scroll");
@@ -80,10 +93,12 @@ public class RotateObject : MonoBehaviour
     }
     void OnScrollCancelled(InputAction.CallbackContext context)
     {
-        scroll = 0;
+        
     }
     private void Update()
     {
+        if (target == null) return;
+
         Vector2 realTarget = new Vector2(pos.y - lastPos.y, -pos.x + lastPos.x);
 
         buffer.SetLatest(realTarget);
@@ -101,7 +116,13 @@ public class RotateObject : MonoBehaviour
 
         lastPos = pos;
 
-        cam.transform.position = new Vector3(0, 0, Mathf.Lerp(-6f, -5f, zoomBuffer));
-        cam.fieldOfView = Mathf.Lerp(20f, 50f, zoomBuffer);
+        cam.SetParams(new CameraManager.CameraParams()
+        {
+            worldPos = new Vector3(0, 0, Mathf.Lerp(-6f, -5f, zoomBuffer)),
+            eulerAngles = Vector3.zero,
+            fov = Mathf.Lerp(20f, 50f, zoomBuffer),
+            easeTime = 0.01f,
+            index = CameraManager.CameraInfluencer.ObjectFreeInspector
+        });
     }
 }
