@@ -99,7 +99,7 @@ public class ObjectFreeInspector : MonoBehaviour
     {
         if (target == null) return;
 
-        Vector2 realTarget = new Vector2(pos.y - lastPos.y, -pos.x + lastPos.x);
+        Vector2 realTarget = new Vector2(pos.y - lastPos.y, -pos.x + lastPos.x) * 0.4f;
 
         buffer.SetLatest(realTarget);
 
@@ -121,7 +121,7 @@ public class ObjectFreeInspector : MonoBehaviour
             worldPos = new Vector3(0, 0, Mathf.Lerp(-6f, -5f, zoomBuffer)),
             eulerAngles = Vector3.zero,
             fov = Mathf.Lerp(20f, 50f, zoomBuffer),
-            easeTime = 0.01f,
+            easeTime = 0.04f,
             index = CameraManager.CameraInfluencer.ObjectFreeInspector
         });
     }

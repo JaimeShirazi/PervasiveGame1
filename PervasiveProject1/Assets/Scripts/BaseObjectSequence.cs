@@ -1,26 +1,12 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [Serializable]
 public abstract class BaseObjectSequence
 {
-    public class ObjectSequenceOperation : CustomYieldInstruction
-    {
-        private string question;
-        private int box;
-        public string Question => question;
-        public int Box => box;
-        internal bool done = false;
-        internal void Finish(string question, int box)
-        {
-            done = true;
-            this.question = question;
-            this.box = box;
-        }
-        public override bool keepWaiting => !done;
-    }
-    private readonly string name;
+    protected readonly string name;
     public BaseObjectSequence(string name)
     {
         this.name = name;
@@ -35,29 +21,59 @@ public abstract class BaseObjectSequence
         return current;
     }
     const float MESSAGE_TIME = 5f;
+    const string PROMPT_ONE = "Consider {0}.";
+    const float DELAY_NORM_START_TO_PROMPT_ONE = 0;
+    const string PROMPT_TWO = "What is this object's history?";
+    const float DELAY_NORM_PROMPT_ONE_TO_PROMPT_TWO = 10f / 60f;
+    const float DELAY_NORM_PROMPT_TWO_TO_PROMPT_THREE = 20f / 60f;
+    const float REMAINING_TIME = 1f - (DELAY_NORM_START_TO_PROMPT_ONE + DELAY_NORM_PROMPT_ONE_TO_PROMPT_TWO + DELAY_NORM_PROMPT_TWO_TO_PROMPT_THREE);
     public IEnumerator MainSequence(int thisIndex, string networkQuestion)
     {
         OnBegin();
         bool isEven = thisIndex % 2 == 0;
 
-        TextDisplayer.Display("Consider this " + name + ".", IntroductionMessagePosition, MESSAGE_TIME);
-        yield return new WaitForSeconds(Length * (10f / 60f));
-        TextDisplayer.Display("What is this object's history?", isEven ? TextDisplayer.TextPosition.LeftHigher : TextDisplayer.TextPosition.RightHigher, MESSAGE_TIME);
-        yield return new WaitForSeconds(Length * (20f / 60f));
-        TextDisplayer.Display(networkQuestion, isEven ? TextDisplayer.TextPosition.RightLower : TextDisplayer.TextPosition.LeftLower, MESSAGE_TIME);
-        yield return new WaitForSeconds(Length * (20f / 60f));
+        if (DELAY_NORM_START_TO_PROMPT_ONE > 0) yield return new WaitForSeconds(Length * DELAY_NORM_START_TO_PROMPT_ONE);
 
-        QuestionPromptOperation promptOperation = QuestionPromptManager.Ask(name);
-        yield return promptOperation;
+        TextDisplayer.Display(string.Format(PROMPT_ONE, name),
+            IntroductionMessagePosition,
+            MESSAGE_TIME);
 
-        BoxSortingOperation sortOperation = BoxManager.BeginSelection(null);
-        yield return sortOperation;
+        if (DELAY_NORM_PROMPT_ONE_TO_PROMPT_TWO > 0) yield return new WaitForSeconds(Length * DELAY_NORM_PROMPT_ONE_TO_PROMPT_TWO);
 
-        OnEnd();
-        current.Finish(promptOperation.Question, sortOperation.Box);
+        TextDisplayer.Display(PROMPT_TWO,
+            isEven ? TextDisplayer.TextPosition.LeftHigher : TextDisplayer.TextPosition.RightHigher,
+            MESSAGE_TIME);
+
+        if (DELAY_NORM_PROMPT_TWO_TO_PROMPT_THREE > 0) yield return new WaitForSeconds(Length * DELAY_NORM_PROMPT_TWO_TO_PROMPT_THREE);
+
+        TextDisplayer.Display(networkQuestion,
+            isEven ? TextDisplayer.TextPosition.RightLower : TextDisplayer.TextPosition.LeftLower,
+            MESSAGE_TIME);
+
+        if (REMAINING_TIME > 0) yield return new WaitForSeconds(Length * REMAINING_TIME);
+
+        string question = "";
+        int box = -1;
+        void OnRecieveQuestion(string value)
+        {
+            question = value;
+        }
+        void OnRecieveBox(int index)
+        {
+            box = index;
+        }
+
+        yield return OnEnd(OnRecieveQuestion, OnRecieveBox);
+
+        current.Finish(question, box);
     }
     protected virtual void OnBegin() { }
-    protected virtual void OnEnd() { }
+    protected virtual IEnumerator OnEnd(UnityAction<string> question, UnityAction<int> targetBox)
+    {
+        question.Invoke(""); targetBox.Invoke(-1);
+        yield return null;
+    }
+    public virtual void OnGameStateReset() { }
     /// <summary>
     /// Where the "consider this [thing]" text should be placed
     /// </summary>

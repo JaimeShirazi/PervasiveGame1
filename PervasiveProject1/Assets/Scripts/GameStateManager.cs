@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public class GameStateManager : MonoBehaviour
 {
@@ -8,14 +9,23 @@ public class GameStateManager : MonoBehaviour
 
     private static List<BaseObjectSequence> sequences = new()
     {
-        new VirtualObjectSequence("nail", "Nail"),
-        new VirtualObjectSequence("clown", "Clown"),
-        new VirtualObjectSequence("rose", "Rose"),
-        new VirtualObjectSequence("shell", "Shell"),
-        new VirtualObjectSequence("watch", "Watch"),
-        new VirtualObjectSequence("phone", "Phone"),
+        new VirtualObjectSequence("this nail", "Nail"),
+        new VirtualObjectSequence("this clown", "Clown"),
+        new VirtualObjectSequence("this rose", "Rose"),
+        new VirtualObjectSequence("this shell", "Shell"),
+        new VirtualObjectSequence("this watch", "Watch"),
+        new VirtualObjectSequence("this phone", "Phone"),
         new RealObjectSequence("your mouse"),
     };
+
+    private static UnityEvent onSequenceEnd = new();
+    public static event UnityAction OnSequenceEnd
+    {
+        add => onSequenceEnd.AddListener(value);
+        remove => onSequenceEnd.RemoveListener(value);
+    }
+
+    [SerializeField] private CameraManager cameraManager;
 
     private INetworkManager networkManager;
     /// <remarks>
@@ -45,10 +55,22 @@ public class GameStateManager : MonoBehaviour
         begun = true;
         for (int i = 0; i < sequences.Count; i++)
         {
+            OnSequenceEnd += sequences[i].OnGameStateReset;
+
+            FadeOutUI.FadeOut();
             string networkQuestion = networkManager.ReceiveQuestion(i);
-            BaseObjectSequence.ObjectSequenceOperation operation = sequences[i].Begin(this, i, networkQuestion);
+
+            ObjectSequenceOperation operation = sequences[i].Begin(this, i, networkQuestion);
             yield return operation;
+
             networkManager.SendQuestion(i, networkQuestion);
+
+            float fadeTime = FadeOutUI.FadeIn();
+            yield return new WaitForSeconds(fadeTime);
+            cameraManager.ReleaseAll();
+            onSequenceEnd.Invoke();
+
+            OnSequenceEnd -= sequences[i].OnGameStateReset;
         }
     }
 }

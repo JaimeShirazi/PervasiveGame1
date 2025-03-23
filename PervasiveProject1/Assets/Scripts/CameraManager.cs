@@ -109,8 +109,16 @@ public class CameraManager : MonoBehaviour
             currentHighest = highestPriority;
         }
     }
+    public void ReleaseAll()
+    {
+        targets.Clear();
+        timeStarted = 0;
+        currentHighest = (CameraInfluencer)0;
+    }
     void Update()
     {
+        if (targets.Count < 1) return;
+
         CameraParams.Lerp(previous, targets[currentHighest], Time.time, timeStarted).Apply(cam);
     }
 }

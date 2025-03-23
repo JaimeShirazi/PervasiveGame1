@@ -1,12 +1,20 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using static UnityEngine.GraphicsBuffer;
 
 public class BoxLogic : MonoBehaviour
 {
+    const float OFFSCREEN_HEIGHT = -10f;
+
     [SerializeField] private BoxAnimator animator;
 
+    private bool interactable;
     private bool selected;
+    private UnityAction<BoxLogic, bool> setHover;
+    private UnityAction<BoxLogic> setSelected;
 
     #region Collisions listener
     [Serializable]
@@ -44,29 +52,59 @@ public class BoxLogic : MonoBehaviour
     }
     public void OnDetectorUpdate()
     {
+        if (selected || !interactable) return;
+
         MouseState newState = new(detectors);
         if (MouseState.StartedHovering(currentMouseState, newState))
         {
             animator.OpenLid();
+            setHover.Invoke(this, true);
         }
         else if (MouseState.StoppedHovering(currentMouseState, newState))
         {
-            if (!selected)
-            {
-                animator.CloseLid();
-            }
+            animator.CloseLid();
+            setHover.Invoke(this, false);
         }
         if (MouseState.StartedClicking(currentMouseState, newState))
         {
             animator.OpenLid();
             selected = true;
+            setSelected.Invoke(this);
         }
         currentMouseState = newState;
     }
     #endregion
 
-    public void Initialise()
+    public void Initialise(float targetX, UnityAction<BoxLogic, bool> setHover, UnityAction<BoxLogic> setSelected)
     {
+        interactable = true;
+        animator.CloseLidInstantly();
         selected = false;
+        gameObject.SetActive(true);
+        this.setHover = setHover;
+        this.setSelected = setSelected;
+        transform.position = new Vector3(targetX, OFFSCREEN_HEIGHT, 11.78f);
+        transform.DOMove(new Vector3(targetX, -5.34f, 11.78f), 1f).SetEase(Ease.OutQuad);
+    }
+    public void ResetState()
+    {
+        transform.position = new Vector3(0, OFFSCREEN_HEIGHT, 11.78f);
+        gameObject.SetActive(false);
+    }
+    public void FreezeInput()
+    {
+        interactable = false;
+        currentMouseState = new()
+        {
+            hovering = false,
+            clicked = false
+        };
+    }
+    /// <summary>
+    /// Closes the lid, intended to be called after the object has been moved inside the box
+    /// </summary>
+    public void TrapObject()
+    {
+        animator.CloseLid();
     }
 }

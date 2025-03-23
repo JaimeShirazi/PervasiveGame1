@@ -9,7 +9,7 @@ public class BoxAnimator : MonoBehaviour
     }
     const float ANIMATION_LENGTH = 0.3f;
     private float timeStartedAnimate = -ANIMATION_LENGTH;
-    private AnimationType type = AnimationType.Close;
+    [SerializeField] private AnimationType type = AnimationType.Close;
     private void SetAnimProgress(float t)
     {
         float smoothed = InOutSine(t);
@@ -35,11 +35,12 @@ public class BoxAnimator : MonoBehaviour
     }
     public void OpenLid()
     {
+        if (type == AnimationType.Open) return;
+
         if (IsAnimating())
         {
             switch (type)
             {
-                case AnimationType.Open: return;
                 case AnimationType.Close:
                     ReflectTime();
                     break;
@@ -53,11 +54,12 @@ public class BoxAnimator : MonoBehaviour
     }
     public void CloseLid()
     {
+        if (type == AnimationType.Close) return;
+
         if (IsAnimating())
         {
             switch (type)
             {
-                case AnimationType.Close: return;
                 case AnimationType.Open:
                     ReflectTime();
                     break;
@@ -68,6 +70,12 @@ public class BoxAnimator : MonoBehaviour
         }
         else timeStartedAnimate = Time.time;
         type = AnimationType.Close;
+    }
+    public void CloseLidInstantly()
+    {
+        timeStartedAnimate = Time.time - ANIMATION_LENGTH;
+        type = AnimationType.Close;
+        SetAnimProgress(1);
     }
     private void Update()
     {

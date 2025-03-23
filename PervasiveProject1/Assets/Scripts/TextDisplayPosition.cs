@@ -33,7 +33,7 @@ public class TextDisplayPosition : MonoBehaviour
             fadeSeq.AppendInterval(fadeHoldTime);
         fadeSeq.Append(text.DOFade(0, fadeOutTime));
 
-        Sequence seq = DOTween.Sequence(RectTrans.DOAnchorPos(anchoredOrigin + anchoredDelta, time));
-        seq.Join(DOTween.To(() => text.fontSize, x => text.fontSize = x, fontSizeOrigin + fontSizeDelta, time));
+        Sequence seq = DOTween.Sequence(RectTrans.DOAnchorPos(anchoredOrigin + anchoredDelta, time).SetEase(Ease.Linear));
+        seq.Join(DOTween.To(() => text.fontSize, x => text.fontSize = x, fontSizeOrigin + fontSizeDelta, time).SetEase(Ease.Linear));
     }
 }

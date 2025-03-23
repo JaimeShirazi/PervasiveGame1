@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [Serializable]
 public class VirtualObjectSequence : BaseObjectSequence
@@ -16,11 +18,24 @@ public class VirtualObjectSequence : BaseObjectSequence
         prefabInstance = GameObject.Instantiate(prefabResource);
         ObjectFreeInspector.BeginInspecting(prefabInstance);
     }
-    protected override void OnEnd()
+    protected override IEnumerator OnEnd(UnityAction<string> question, UnityAction<int> targetBox)
     {
         ObjectFreeInspector.EndInspection();
+
+        QuestionPromptOperation promptOperation = QuestionPromptManager.Ask(name);
+        yield return promptOperation;
+        question.Invoke(promptOperation.Question);
+
+        BoxSortingOperation sortOperation = BoxManager.BeginSelection(prefabInstance);
+        yield return sortOperation;
+        targetBox.Invoke(sortOperation.Box);
+    }
+    public override void OnGameStateReset()
+    {
+        GameObject.Destroy(prefabInstance);
+        prefabInstance = null;
     }
     protected override TextDisplayer.TextPosition IntroductionMessagePosition => TextDisplayer.TextPosition.Top;
-    protected override float Length => 60f;
+    protected override float Length => 8f;
     protected override bool Sortable => true;
 }
