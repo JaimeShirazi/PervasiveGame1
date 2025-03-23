@@ -22,7 +22,7 @@ public class VirtualObjectSequence : BaseObjectSequence
     {
         ObjectFreeInspector.EndInspection();
 
-        QuestionPromptOperation promptOperation = QuestionPromptManager.Ask(name);
+        QuestionPromptOperation promptOperation = QuestionPromptManager.Ask("does this " + name);
         yield return promptOperation;
         question.Invoke(promptOperation.Question);
 
@@ -37,5 +37,4 @@ public class VirtualObjectSequence : BaseObjectSequence
     }
     protected override TextDisplayer.TextPosition IntroductionMessagePosition => TextDisplayer.TextPosition.Top;
     protected override float Length => 8f;
-    protected override bool Sortable => true;
 }

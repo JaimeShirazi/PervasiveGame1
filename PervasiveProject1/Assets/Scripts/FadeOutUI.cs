@@ -5,6 +5,20 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class FadeOutUI : MonoBehaviour
 {
+    public class FadeOpertaion : CustomYieldInstruction
+    {
+        private bool done;
+        public void Done() => done = true;
+        public override bool keepWaiting => !done;
+        internal static FadeOpertaion GetCompleteOperation()
+        {
+            FadeOpertaion op = new();
+            op.Done();
+            return op;
+        }
+    }
+    private FadeOpertaion current = FadeOpertaion.GetCompleteOperation();
+
     const float FADE_LENGTH = 1f;
 
     private static FadeOutUI instance;
@@ -17,10 +31,6 @@ public class FadeOutUI : MonoBehaviour
     float GetNormalisedTime()
     {
         return (Time.time - timeStarted) / FADE_LENGTH;
-    }
-    float GetRemainingTime()
-    {
-        return FADE_LENGTH - (Time.time - timeStarted);
     }
     float GetReflectedTime()
     {
@@ -41,26 +51,28 @@ public class FadeOutUI : MonoBehaviour
     }
 
     /// <returns>How long the fade will take</returns>
-    public static float FadeIn()
+    public static FadeOpertaion FadeIn()
     {
         if (!instance.targetVisible)
         {
             instance.BeginToggleFade();
         }
-        return instance.GetRemainingTime();
+        return instance.current;
     }
     /// <returns>How long the fade will take</returns>
-    public static float FadeOut()
+    public static FadeOpertaion FadeOut()
     {
         if (instance.targetVisible)
         {
             instance.BeginToggleFade();
         }
-        return instance.GetRemainingTime();
+        return instance.current;
     }
 
     void BeginToggleFade()
     {
+        current = new();
+
         gameObject.SetActive(true);
 
         if (GetNormalisedTime() > 1)
@@ -84,6 +96,8 @@ public class FadeOutUI : MonoBehaviour
             yield return null;
         }
         SetAlpha(1);
+
+        current.Done();
 
         if (!targetVisible)
         {

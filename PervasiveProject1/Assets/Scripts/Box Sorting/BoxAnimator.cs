@@ -9,7 +9,7 @@ public class BoxAnimator : MonoBehaviour
     }
     const float ANIMATION_LENGTH = 0.3f;
     private float timeStartedAnimate = -ANIMATION_LENGTH;
-    [SerializeField] private AnimationType type = AnimationType.Close;
+    private AnimationType type = AnimationType.Close;
     private void SetAnimProgress(float t)
     {
         float smoothed = InOutSine(t);

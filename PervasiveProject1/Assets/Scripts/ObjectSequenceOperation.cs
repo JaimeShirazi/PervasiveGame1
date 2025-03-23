@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class ObjectSequenceOperation : CustomYieldInstruction
 {
+    private readonly float expectedLength;
+    public float ExpectedLength => expectedLength;
     private string question;
     private int box;
     public string Question => question;
@@ -14,4 +16,8 @@ public class ObjectSequenceOperation : CustomYieldInstruction
         this.box = box;
     }
     public override bool keepWaiting => !done;
+    public ObjectSequenceOperation(float expectedLength)
+    {
+        this.expectedLength = expectedLength;
+    }
 }

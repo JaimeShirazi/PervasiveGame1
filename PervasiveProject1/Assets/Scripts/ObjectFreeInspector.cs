@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows.WebCam;
 
 public class ObjectFreeInspector : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class ObjectFreeInspector : MonoBehaviour
         target.transform.position = new Vector3(0, 4f, 0); //A point high enough offscreen
         target.transform.DOMove(Vector3.zero, 2f).SetEase(Ease.OutQuad);
         instance.target = target.transform;
+        instance.SetCam(0f);
     }
     public static void EndInspection()
     {
@@ -116,12 +118,16 @@ public class ObjectFreeInspector : MonoBehaviour
 
         lastPos = pos;
 
+        SetCam(0.04f);
+    }
+    void SetCam(float easeTime)
+    {
         cam.SetParams(new CameraManager.CameraParams()
         {
             worldPos = new Vector3(0, 0, Mathf.Lerp(-6f, -5f, zoomBuffer)),
             eulerAngles = Vector3.zero,
             fov = Mathf.Lerp(20f, 50f, zoomBuffer),
-            easeTime = 0.04f,
+            easeTime = easeTime,
             index = CameraManager.CameraInfluencer.ObjectFreeInspector
         });
     }

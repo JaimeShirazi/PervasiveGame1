@@ -64,6 +64,7 @@ public class CameraManager : MonoBehaviour
             currentHighest = target.index;
             previous = target;
             timeStarted = Time.time - target.easeTime;
+            Update();
             return;
         }
 

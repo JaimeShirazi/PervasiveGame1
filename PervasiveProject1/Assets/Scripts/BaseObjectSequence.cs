@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public abstract class BaseObjectSequence
 {
     protected readonly string name;
+    protected virtual string ConsiderFormattedName => "this " + name;
     public BaseObjectSequence(string name)
     {
         this.name = name;
@@ -16,7 +17,7 @@ public abstract class BaseObjectSequence
     {
         if (current != null) return current;
 
-        current = new();
+        current = new(Length);
         caller.StartCoroutine(MainSequence(thisIndex, networkQuestion));
         return current;
     }
@@ -34,7 +35,7 @@ public abstract class BaseObjectSequence
 
         if (DELAY_NORM_START_TO_PROMPT_ONE > 0) yield return new WaitForSeconds(Length * DELAY_NORM_START_TO_PROMPT_ONE);
 
-        TextDisplayer.Display(string.Format(PROMPT_ONE, name),
+        TextDisplayer.Display(string.Format(PROMPT_ONE, ConsiderFormattedName),
             IntroductionMessagePosition,
             MESSAGE_TIME);
 
@@ -79,5 +80,4 @@ public abstract class BaseObjectSequence
     /// </summary>
     protected abstract TextDisplayer.TextPosition IntroductionMessagePosition { get; }
     protected abstract float Length { get; }
-    protected abstract bool Sortable { get; }
 }

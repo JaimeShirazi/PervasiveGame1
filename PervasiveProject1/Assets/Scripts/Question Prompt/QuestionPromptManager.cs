@@ -16,10 +16,10 @@ public class QuestionPromptManager : MonoBehaviour
     {
         instance = this;
     }
-    public static QuestionPromptOperation Ask(string name) => instance.AskInternal(name);
-    private QuestionPromptOperation AskInternal(string name)
+    public static QuestionPromptOperation Ask(string formattedPrompt) => instance.AskInternal(formattedPrompt);
+    private QuestionPromptOperation AskInternal(string formattedPrompt)
     {
-        title.text = "What does this " + name + " make you wonder?";
+        title.text = "What " + formattedPrompt + " make you wonder?";
         group.alpha = 0;
         inputField.text = "";
         group.DOFade(1, 0.5f);
