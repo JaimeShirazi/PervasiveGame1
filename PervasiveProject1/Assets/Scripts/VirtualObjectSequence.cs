@@ -36,5 +36,5 @@ public class VirtualObjectSequence : BaseObjectSequence
         prefabInstance = null;
     }
     protected override TextDisplayer.TextPosition IntroductionMessagePosition => TextDisplayer.TextPosition.Top;
-    protected override float Length => 8f;
+    protected override float Length => 60f;
 }

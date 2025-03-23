@@ -76,7 +76,7 @@ public class GameStateManager : MonoBehaviour
             countdown.Begin(operation.ExpectedLength);
             yield return operation;
 
-            networkManager.SendQuestion(i, networkQuestion);
+            networkManager.SendQuestion(i, operation.Question);
 
             yield return FadeOutUI.FadeIn();
 

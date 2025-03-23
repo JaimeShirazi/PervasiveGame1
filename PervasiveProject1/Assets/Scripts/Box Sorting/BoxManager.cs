@@ -96,8 +96,8 @@ public class BoxManager : MonoBehaviour
 
         target.transform.DOMove(new Vector3(GetPos(hoveringIndex), -5f, 11.78f), 1f);
         Sequence shrink = DOTween.Sequence();
-        shrink.AppendInterval(0.3f);
-        shrink.Append(target.transform.DOScale(0, 0.7f)).SetEase(Ease.InSine);
+        shrink.AppendInterval(0.2f);
+        shrink.Append(target.transform.DOScale(0, 0.8f)).SetEase(Ease.InSine);
         shrink.Play();
         yield return new WaitForSeconds(0.7f);
         boxes[selectedIndex].TrapObject();

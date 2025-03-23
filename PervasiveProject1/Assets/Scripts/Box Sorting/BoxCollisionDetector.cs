@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class BoxCollisionDetector : MonoBehaviour
+public class BoxCollisionDetector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private BoxLogic logic;
     public bool Hovering { get; private set; }
@@ -13,22 +14,22 @@ public class BoxCollisionDetector : MonoBehaviour
     {
         logic.DeregisterDetector(this);
     }
-    private void OnMouseEnter()
+    public void OnPointerEnter(PointerEventData _)
     {
         Hovering = true;
         logic.OnDetectorUpdate();
     }
-    private void OnMouseExit()
+    public void OnPointerExit(PointerEventData _)
     {
         Hovering = false;
         logic.OnDetectorUpdate();
     }
-    private void OnMouseDown()
+    public void OnPointerDown(PointerEventData _)
     {
         Clicking = true;
         logic.OnDetectorUpdate();
     }
-    private void OnMouseUp()
+    public void OnPointerUp(PointerEventData _)
     {
         Clicking = false;
         logic.OnDetectorUpdate();

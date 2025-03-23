@@ -19,6 +19,7 @@ public class QuestionPromptManager : MonoBehaviour
     public static QuestionPromptOperation Ask(string formattedPrompt) => instance.AskInternal(formattedPrompt);
     private QuestionPromptOperation AskInternal(string formattedPrompt)
     {
+        group.blocksRaycasts = true;
         title.text = "What " + formattedPrompt + " make you wonder?";
         group.alpha = 0;
         inputField.text = "";
@@ -31,5 +32,6 @@ public class QuestionPromptManager : MonoBehaviour
         if (current == null) return;
         current.Finish(inputField.text);
         group.DOFade(0, 0.5f);
+        group.blocksRaycasts = false;
     }
 }
