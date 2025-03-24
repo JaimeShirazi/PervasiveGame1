@@ -18,5 +18,5 @@ public class RealObjectSequence : BaseObjectSequence
         question.Invoke(promptOperation.Question);
     }
 
-    protected override float Length => 60f;
+    protected override float Length => 40f;
 }
