@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Box
-  m_Shader: {fileID: 4800000, guid: d01ecdd8f3c3d70498345f3728659208, type: 3}
+  m_Shader: {fileID: 4800000, guid: c11d0bc2636186140a7b3e351bcdf495, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -37,12 +37,20 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AO_Closed:
+        m_Texture: {fileID: 2800000, guid: 0d5e5fc0be0032f4ab636e2e7dc6d7df, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AO_Open:
+        m_Texture: {fileID: 2800000, guid: ff8423802a4b5b54e849c67acba8d55e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTex:
-        m_Texture: {fileID: 2800000, guid: 6abdd812113176044be29c3aa41d11f4, type: 3}
+        m_Texture: {fileID: 2800000, guid: ac0ca9530f1d50a4a8058ad317da359c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -99,6 +107,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AO_Blend: 0
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0

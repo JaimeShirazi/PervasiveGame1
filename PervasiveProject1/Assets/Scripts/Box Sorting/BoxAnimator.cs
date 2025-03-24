@@ -3,6 +3,7 @@ using UnityEngine;
 public class BoxAnimator : MonoBehaviour
 {
     [SerializeField] private Transform lidAnchor;
+    [SerializeField] private MeshRenderer topRender, bottomRender;
     private enum AnimationType
     {
         Open, Close
@@ -17,13 +18,20 @@ public class BoxAnimator : MonoBehaviour
         {
             lidAnchor.localEulerAngles = Vector3.right * 90f * normValue;
         }
+        void SetMat(float normValue)
+        {
+            topRender.material.SetFloat("_AO_Blend", Mathf.Min(normValue * 7f, 1));
+            bottomRender.material.SetFloat("_AO_Blend", Mathf.Min(normValue * 7f, 1));
+        }
         switch (type)
         {
             case AnimationType.Open:
                 SetEulerX(smoothed);
+                SetMat(smoothed);
                 break;
             case AnimationType.Close:
                 SetEulerX(1f - smoothed);
+                SetMat(1f - smoothed);
                 break;
         }
     }
