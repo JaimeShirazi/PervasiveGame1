@@ -69,7 +69,7 @@ public class GameStateManager : MonoBehaviour
             OnSequenceEnd += sequences[i].OnGameStateReset;
 
             yield return FadeOutUI.FadeOut();
-
+            
             string networkQuestion = networkManager.ReceiveQuestion(i);
 
             ObjectSequenceOperation operation = sequences[i].Begin(this, i, networkQuestion);

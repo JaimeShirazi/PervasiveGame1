@@ -17,8 +17,8 @@ public class PlaceholderNetworkManager : MonoBehaviour, INetworkManager
     private List<GameEntry> _privateEntries;
     void Start()
     {
-        GameStateManager.SetNetworkManager(this);
         LoadEntries();
+        GameStateManager.SetNetworkManager(this);
     }
     public string ReceiveQuestion(int index)
     {
@@ -49,8 +49,10 @@ public class PlaceholderNetworkManager : MonoBehaviour, INetworkManager
         _privateEntries = new List<GameEntry>();
         Leaderboards.PervasiveOneGame.GetEntries(entries =>
         {
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < entries.Length; i++){
+                Debug.Log("Starting entry found " + entries[i].Username);
                 _privateEntries.Add(new GameEntry(entries[i].Score,entries[i].Username));
+            }
         });
     }
 }
