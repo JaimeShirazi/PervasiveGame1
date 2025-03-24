@@ -18,7 +18,6 @@ public class PlaceholderNetworkManager : MonoBehaviour, INetworkManager
     void Start()
     {
         LoadEntries();
-        GameStateManager.SetNetworkManager(this);
     }
     public string ReceiveQuestion(int index)
     {
@@ -53,6 +52,7 @@ public class PlaceholderNetworkManager : MonoBehaviour, INetworkManager
                 Debug.Log("Starting entry found " + entries[i].Username);
                 _privateEntries.Add(new GameEntry(entries[i].Score,entries[i].Username));
             }
+            GameStateManager.SetNetworkManager(this);
         });
     }
 }
